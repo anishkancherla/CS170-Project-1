@@ -17,15 +17,42 @@ class Problem:
 
 # Search algorithms
 def uniform_cost_search(state, target): 
+    # ucs is just A* but with h(n) hardcoded to 0
     return 0
 
 def misplaced_tile(state, target):
-    # implement
-    pass
+    n = len(state)
+    m = len(state[0])
+    
+    misplaced = 0
+    for row in range(n):
+        for col in range(m):
+            if state[row][col] != target[row][col] and state[row][col] != 0:
+                misplaced += 1
+    
+    return misplaced
 
 def manhattan_distance(state, target):
-    # implement
-    pass
+    n = len(state) # no of rows
+    m = len(state[0]) # no of columns
+
+    total_dist = 0
+
+    for row in range(n): # iterate over the board 
+        for col in range(m):
+            if state[row][col] != 0: # don't count blank space
+                new_row, new_col = 0, 0
+
+                for i in range(n): # for every single tile in board we find the match in target board
+                    for j in range(m):
+                        if target[i][j] == state[row][col]: # store coordinates if its a match
+                            new_row, new_col = i, j
+                # distance calculation
+                row_total_distance = abs(row - new_row) # find # of steps up or down 
+                col_total_distance = abs(col - new_col) # find # of steps left or right
+                total_dist = total_dist + row_total_distance + col_total_distance
+    
+    return total_dist
 
 def EXPAND(node, problem):
     
