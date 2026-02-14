@@ -160,9 +160,93 @@ def general_search_algorithm(problem, method):
             # nodes = QUEUEING-FUNCTION(nodes, EXPAND(node, problem.OPERATORS))
             children = EXPAND(node, problem)
             nodes = QUEUEING_FUNCTION(nodes, children, method, problem.target)
-            
+
+grid = 3 # we can change this to 4 for 15 puzzle and 5 for 25 if we need to be flexible 
 def main():
-    print("8 puzzle")
+    print("Welcome to the 8 puzzle solver!")
+    print("Choose '1' for default and '2' for custom")
+    user_choice = input("Enter your choice:")
+
+    if user_choice == "2":
+        print("Enter your puzzle and use 0 for the blank.")
+        initial_state = []
+        for num in range(grid): # building the initial state if user chooses custom 
+            row_input = input("Enter row:").split() 
+            row = []
+            for num in row_input:
+                new_num = int(num)
+                row.append(new_num)
+            initial_state.append(row) 
+
+    else:
+        print("Choose depth of puzzle:")
+        print("Depth 0")
+        print("Depth 2")
+        print("Depth 4")
+        print("Depth 8")
+        print("Depth 12")
+        print("Depth 16")
+        print("Depth 20")
+        print("Depth 24")
+        user_choice = input("Enter your depth:")
+        grids = { # default puzzles provided in the instructions from professor
+            "0": [[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 0]],
+
+            "2": [[1, 2, 3],
+                  [4, 5, 6],
+                  [0, 7, 8]],
+
+            "4": [[1, 2, 3],
+                  [5, 0, 6],
+                  [4, 7, 8]],
+
+            "8": [[1, 3, 6],
+                  [5, 0, 2],
+                  [4, 7, 8]],
+
+            "12": [[1, 3, 6],
+                  [5, 0, 7],
+                  [4, 8, 2]],
+
+            "16": [[1, 6, 7],
+                  [5, 0, 3],
+                  [4, 8, 2]],
+
+            "20": [[7, 1, 2],
+                  [4, 8, 5],
+                  [6, 3, 0]],
+
+            "24": [[0, 7, 2],
+                  [4, 6, 1],
+                  [3, 5, 8]],
+        }
+        initial_state = grids[user_choice]
+
+    problem = Problem(initial_state)
+
+    print("Now, choose your algorithm of choice.")
+    print("1. Uniform Cost Search")
+    print("2. A* with Misplaced Tile Heuristic")
+    print("3. A* with Manhattan Distance Heuristic")
+
+    user_choice = input("Enter your choice:")
+    if user_choice == "1":
+        method = uniform_cost_search
+    elif user_choice == "2":
+        method = misplaced_tile
+    else:
+        method = manhattan_distance
+        
+    result, nodes_expanded, max_queue_size = general_search_algorithm(problem, method)
+
+    if result == "failure":
+        print("No solution found.")
+    else:
+        print("Solution depth:" + str(result.cost))
+        print("Nodes expanded:" + str(nodes_expanded))
+        print("Max queue size:" + str(max_queue_size))
 
 if __name__ == "__main__":
     main()
