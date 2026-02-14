@@ -92,34 +92,75 @@ def EXPAND(node, problem): # how to go from one state to another
 
     return children 
 
-def MAKE_NODE(state, method, target):
+def MAKE_NODE(state, method, target): # first node in tree
     h = method(state, target)
 
     return Node(state, None, 0, h)
 
-def MAKE_QUEUE(node):
+def MAKE_QUEUE(node): # create queue with just our initial state 
     return [node]
 
-def EMPTY(nodes):
+def EMPTY(nodes): # if queue is empty then return False
     return len(nodes) == 0
 
-def REMOVE_FRONT(nodes):
+def REMOVE_FRONT(nodes): # we can get the lowest cost node from the queue
     return nodes.pop(0)
 
-def QUEUEING_FUNCTION(nodes, children, method, target):
-    for child in children:
+def QUEUEING_FUNCTION(nodes, children, method, target): 
+    for child in children: # find h(n) 
         child.h = method(child.state, target)
         nodes.append(child)
 
-    def total_cost(node):
+    def total_cost(node): # F(n) = g(n) + h(n) 
         return node.cost + node.h
-
+    # using python sort function here, and sorting by the cost
     nodes.sort(key=total_cost)
     return nodes
 
 def general_search_algorithm(problem, method):
-    pass
+    # nodes = MAKE-QUEUE(MAKE-NODE(problem.INITIAL-STATE))
+    nodes = MAKE_QUEUE(MAKE_NODE(problem.initial_state, method, problem.target))
 
+    seen = set()
+    nodes_expanded = 0
+    max_queue_size = 0
+
+    # loop do
+    while True:
+        # if EMPTY(nodes) then return failure
+        if EMPTY(nodes):
+            return "failure"
+
+        # tracking peak of the queue size. 
+        if len(nodes) > max_queue_size:
+            max_queue_size = len(nodes)
+
+        # node = REMOVE-FRONT(nodes)
+        node = REMOVE_FRONT(nodes)
+
+        # if problem.GOAL-TEST(node.STATE) succeeds then return node
+        if problem.goal_test(node.state):
+            return node, nodes_expanded, max_queue_size
+
+        # this is so we can check with the seen set, python adjustment 
+        key = []
+        for vals in node.state:
+            key.append(tuple(vals))
+        key = tuple(key)
+
+        # only expand if we havent seen this state before
+        if key not in seen: # prevent cycles 
+            seen.add(key)
+            nodes_expanded += 1 # tracking how many nodes we expanded so far
+
+            print("The best state to expand with a g(n) =" + str(node.cost) + "and h(n) =" + str(node.h) + "is:")
+
+            for row in node.state:
+                print(row)
+            # nodes = QUEUEING-FUNCTION(nodes, EXPAND(node, problem.OPERATORS))
+            children = EXPAND(node, problem)
+            nodes = QUEUEING_FUNCTION(nodes, children, method, problem.target)
+            
 def main():
     print("8 puzzle")
 
