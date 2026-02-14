@@ -93,7 +93,9 @@ def EXPAND(node, problem): # how to go from one state to another
     return children 
 
 def MAKE_NODE(state, method, target):
-    pass
+    h = method(state, target)
+
+    return Node(state, None, 0, h)
 
 def MAKE_QUEUE(node):
     return [node]
@@ -105,7 +107,15 @@ def REMOVE_FRONT(nodes):
     return nodes.pop(0)
 
 def QUEUEING_FUNCTION(nodes, children, method, target):
-    pass
+    for child in children:
+        child.h = method(child.state, target)
+        nodes.append(child)
+
+    def total_cost(node):
+        return node.cost + node.h
+
+    nodes.sort(key=total_cost)
+    return nodes
 
 def general_search_algorithm(problem, method):
     pass
