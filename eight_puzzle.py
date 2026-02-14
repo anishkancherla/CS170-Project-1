@@ -20,17 +20,18 @@ def uniform_cost_search(state, target):
     # ucs is just A* but with h(n) hardcoded to 0
     return 0
 
-def misplaced_tile(state, target):
-    n = len(state)
-    m = len(state[0])
-    
+def misplaced_tile(state, target): # count # of tiles in the wrong spot
+    n = len(state) # no. of rows
+    m = len(state[0]) # no. of columns 
+
     misplaced = 0
     for row in range(n):
-        for col in range(m):
-            if state[row][col] != target[row][col] and state[row][col] != 0:
+        for col in range(m): # we can use this for loop to iterate through state 
+            if state[row][col] != target[row][col] and state[row][col] != 0: 
+                # we check if a certain position is not equal to target and if its not the blank space (aka 0)
                 misplaced += 1
     
-    return misplaced
+    return misplaced 
 
 def manhattan_distance(state, target):
     n = len(state) # no of rows
@@ -54,9 +55,42 @@ def manhattan_distance(state, target):
     
     return total_dist
 
-def EXPAND(node, problem):
-    
-    pass
+def EXPAND(node, problem): # how to go from one state to another
+    children = []
+    n = len(node.state) # no of row
+    m = len(node.state[0]) # no of columns
+
+    def valid(row, col):
+        return 0 <= row < n and 0 <= col < m # checking if we're in bounds
+
+    # find the blank
+    blank_row, blank_col = 0, 0
+    for i in range(n):
+        for j in range(m):
+            if node.state[i][j] == 0:
+                blank_row, blank_col = i, j
+
+    directions = [[-1, 0], [1, 0], [0, -1], [0, 1]] # directions we canmove in
+
+    for dx, dy in directions:
+        nr, nc = blank_row + dx, blank_col + dy # new row and new column
+
+        if valid(nr, nc): # if the new coordinate is valid 
+            new_state = []
+            for row in node.state:
+                new_row = []
+                for val in row:
+                    new_row.append(val)
+                new_state.append(new_row)
+
+            # swap blank with the target tile
+            new_state[blank_row][blank_col], new_state[nr][nc] = new_state[nr][nc], new_state[blank_row][blank_col]
+
+            new_cost = node.cost + 1 # child's cost = parent's cost + 1
+            child = Node(new_state, node, new_cost)
+            children.append(child)
+
+    return children 
 
 def MAKE_NODE(state, method, target):
     pass
